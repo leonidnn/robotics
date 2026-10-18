@@ -1,0 +1,35 @@
+# Все длины в метрах, углы в градусах
+
+name: AR-601M arm
+
+arm_side: 1   # b: +1 правая рука, -1 левая
+
+links:
+  l1: {length: 0.4, along_axis: z, sign: 1}
+  l2: {length: 0.18, along_axis: y, sign: -arm_side}
+  l3: {length: 0.3, along_axis: z, sign: -1}
+  l4: {length: 0.12, along_axis: x, sign: 1}
+
+fixed_rotations:
+  r1: {axis: z, angle_deg: 10, sign: arm_side}
+
+joints:
+  q1: {axis: z, limits_deg: [-90, 90]}
+  q2: {axis: y, limits_deg: [-105, 105]}
+  q3: {axis: x, limits_deg: [-45, 45]}
+  q4: {axis: z, limits_deg: [-90, 90]}
+  q5: {axis: y, limits_deg: [-90, 90]}
+  q6: {axis: x, limits_deg: [-90, 90]}
+
+kinematic_chain:
+  - l1
+  - q1
+  - r1
+  - l2
+  - q2
+  - q3
+  - l3
+  - q4
+  - q5
+  - q6
+  - l4
