@@ -1,0 +1,186 @@
+# Task 1. Model check
+joints: ['q1', 'q2', 'q3', 'q4', 'q5', 'q6']
+axes:   ['z', 'y', 'x', 'z', 'y', 'x']
+limits: [[-90, 90], [-105, 105], [-45, 45], [-90, 90], [-90, 90], [-90, 90]]
+chain:  ['l1', 'q1', 'r1', 'l2', 'q2', 'q3', 'l3', 'q4', 'q5', 'q6', 'l4']
+check (6 revolute joints, order, axes): PASS
+
+# Task 2. Forward kinematics, tol = 1e-09
+
+## right (b = +1)
+
+zero: q (deg) = [0, 0, 0, 0, 0, 0]
+[[ 0.9848 -0.1736  0.      0.1494]
+ [ 0.1736  0.9848  0.     -0.1564]
+ [ 0.      0.      1.      0.1   ]
+ [ 0.      0.      0.      1.    ]]
+||R^T R - I|| = 3.14e-16, |det R - 1| = 2.22e-16 PASS
+
+limit (q1 = -90): q (deg) = [-90, 0, 0, 0, 0, 0]
+[[ 0.1736  0.9848  0.     -0.1564]
+ [-0.9848  0.1736  0.     -0.1494]
+ [ 0.      0.      1.      0.1   ]
+ [ 0.      0.      0.      1.    ]]
+||R^T R - I|| = 3.14e-16, |det R - 1| = 2.22e-16 PASS
+
+generic: q (deg) = [20, -30, 15, 40, -25, 60]
+[[ 0.052  -0.766   0.6408  0.1829]
+ [ 0.5535 -0.512  -0.6569  0.0502]
+ [ 0.8312  0.3888  0.3973  0.2488]
+ [ 0.      0.      0.      1.    ]]
+||R^T R - I|| = 8.49e-16, |det R - 1| = 6.66e-16 PASS
+ZYX: roll = 44.3793, pitch = -56.2264, yaw = 84.6342 deg
+
+## left (b = -1)
+
+zero: q (deg) = [0, 0, 0, 0, 0, 0]
+[[ 0.9848  0.1736  0.      0.1494]
+ [-0.1736  0.9848  0.      0.1564]
+ [ 0.      0.      1.      0.1   ]
+ [ 0.      0.      0.      1.    ]]
+||R^T R - I|| = 3.14e-16, |det R - 1| = 2.22e-16 PASS
+
+limit (q1 = -90): q (deg) = [-90, 0, 0, 0, 0, 0]
+[[-0.1736  0.9848  0.      0.1564]
+ [-0.9848 -0.1736  0.     -0.1494]
+ [ 0.      0.      1.      0.1   ]
+ [ 0.      0.      0.      1.    ]]
+||R^T R - I|| = 1.21e-17, |det R - 1| = 0.00e+00 PASS
+
+generic: q (deg) = [20, -30, 15, 40, -25, 60]
+[[ 0.2382 -0.8949  0.3775  0.1265]
+ [ 0.5023 -0.2191 -0.8365  0.3392]
+ [ 0.8312  0.3888  0.3973  0.2488]
+ [ 0.      0.      0.      1.    ]]
+||R^T R - I|| = 6.51e-16, |det R - 1| = 0.00e+00 PASS
+ZYX: roll = 44.3793, pitch = -56.2264, yaw = 64.6342 deg
+
+# Task 3. Analytical IK, duplicate rule: all |dq_i| < 1e-9 rad (mod 2pi)
+
+## right (b = +1)
+
+target zero: 4 branches, 1 feasible
+  [0] q = [0. 0. 0. 0. 0. 0.]  pos_err = 0.0e+00 m, rot_err = 0.0e+00 rad, feasible
+  [1] q = [   0.    0.    0. -180. -180. -180.]  pos_err = 3.1e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [2] q = [   0. -180. -180. -180.    0.    0.]  pos_err = 4.2e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [3] q = [   0. -180. -180.    0. -180. -180.]  pos_err = 6.2e-17 m, rot_err = 3.1e-33 rad, out of limits
+
+target limit (q1 = -90): 4 branches, 1 feasible
+  [0] q = [-90.   0.   0.   0.   0.   0.]  pos_err = 0.0e+00 m, rot_err = 0.0e+00 rad, feasible
+  [1] q = [ -90.    0.    0. -180. -180. -180.]  pos_err = 1.4e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [2] q = [ -90. -180. -180. -180.    0.    0.]  pos_err = 8.0e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [3] q = [ -90. -180. -180.    0. -180. -180.]  pos_err = 7.9e-17 m, rot_err = 1.5e-33 rad, out of limits
+
+target generic: 8 branches, 1 feasible
+  [0] q = [ 129.5227   30.       15.     -123.2513  -75.3458  121.0953]  pos_err = 6.2e-17 m, rot_err = 4.7e-16 rad, out of limits
+  [1] q = [ 129.5227   30.       15.       56.7487 -104.6542  -58.9047]  pos_err = 6.2e-17 m, rot_err = 3.9e-16 rad, out of limits
+  [2] q = [ 20. -30.  15.  40. -25.  60.]  pos_err = 5.6e-17 m, rot_err = 6.5e-16 rad, feasible
+  [3] q = [  20.  -30.   15. -140. -155. -120.]  pos_err = 6.2e-17 m, rot_err = 9.3e-16 rad, out of limits
+  [4] q = [  20.  150.  165. -140.  -25.   60.]  pos_err = 2.6e-16 m, rot_err = 7.4e-16 rad, out of limits
+  [5] q = [  20.  150.  165.   40. -155. -120.]  pos_err = 2.5e-16 m, rot_err = 5.5e-16 rad, out of limits
+  [6] q = [ 129.5227 -150.      165.       56.7487  -75.3458  121.0953]  pos_err = 2.3e-16 m, rot_err = 4.8e-16 rad, out of limits
+  [7] q = [ 129.5227 -150.      165.     -123.2513 -104.6542  -58.9047]  pos_err = 2.5e-16 m, rot_err = 1.6e-15 rad, out of limits
+
+target unreachable (p = [2, 0, 0]): 0 branches, 0 feasible
+
+target degenerate (q5 = 90): 8 branches, 1 feasible
+  [0] q = [129.5227  30.      15.     -55.0241  31.3118  75.0241]  pos_err = 9.8e-17 m, rot_err = 2.6e-16 rad, out of limits
+  [1] q = [ 129.5227   30.       15.      124.9759  148.6882 -104.9759]  pos_err = 6.9e-17 m, rot_err = 6.2e-16 rad, out of limits
+  [2] q = [ 20. -30.  15. -20.  90.   0.]  pos_err = 1.0e-16 m, rot_err = 5.5e-16 rad, feasible
+  [3] q = [  20.  -30.   15.  160.   90. -180.]  pos_err = 6.5e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [4] q = [ 20. 150. 165. 160.  90.   0.]  pos_err = 2.8e-16 m, rot_err = 6.8e-16 rad, out of limits
+  [5] q = [  20.  150.  165.  -20.   90. -180.]  pos_err = 3.1e-16 m, rot_err = 8.4e-16 rad, out of limits
+  [6] q = [ 129.5227 -150.      165.      124.9759   31.3118   75.0241]  pos_err = 2.5e-16 m, rot_err = 3.0e-16 rad, out of limits
+  [7] q = [ 129.5227 -150.      165.      -55.0241  148.6882 -104.9759]  pos_err = 2.4e-16 m, rot_err = 1.2e-15 rad, out of limits
+
+## left (b = -1)
+
+target zero: 4 branches, 1 feasible
+  [0] q = [0. 0. 0. 0. 0. 0.]  pos_err = 0.0e+00 m, rot_err = 0.0e+00 rad, feasible
+  [1] q = [   0.    0.    0. -180. -180. -180.]  pos_err = 3.1e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [2] q = [   0. -180. -180. -180.    0.    0.]  pos_err = 6.4e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [3] q = [   0. -180. -180.    0. -180. -180.]  pos_err = 6.2e-17 m, rot_err = 3.1e-33 rad, out of limits
+
+target limit (q1 = -90): 4 branches, 1 feasible
+  [0] q = [-90.   0.   0.   0.   0.   0.]  pos_err = 0.0e+00 m, rot_err = 0.0e+00 rad, feasible
+  [1] q = [ -90.    0.    0. -180. -180. -180.]  pos_err = 1.4e-17 m, rot_err = 2.1e-16 rad, out of limits
+  [2] q = [ -90. -180. -180. -180.    0.    0.]  pos_err = 1.4e-16 m, rot_err = 6.4e-16 rad, out of limits
+  [3] q = [ -90. -180. -180.    0. -180. -180.]  pos_err = 1.2e-16 m, rot_err = 5.1e-16 rad, out of limits
+
+target generic: 8 branches, 1 feasible
+  [0] q = [-38.7031  30.      15.     132.9718 -27.1859  21.8434]  pos_err = 6.8e-17 m, rot_err = 4.8e-16 rad, out of limits
+  [1] q = [ -38.7031   30.       15.      -47.0282 -152.8141 -158.1566]  pos_err = 1.1e-16 m, rot_err = 5.4e-16 rad, out of limits
+  [2] q = [ 20. -30.  15.  40. -25.  60.]  pos_err = 0.0e+00 m, rot_err = 6.1e-16 rad, feasible
+  [3] q = [  20.  -30.   15. -140. -155. -120.]  pos_err = 2.8e-17 m, rot_err = 4.2e-16 rad, out of limits
+  [4] q = [  20.  150.  165. -140.  -25.   60.]  pos_err = 1.1e-16 m, rot_err = 8.7e-16 rad, out of limits
+  [5] q = [  20.  150.  165.   40. -155. -120.]  pos_err = 7.9e-17 m, rot_err = 8.7e-16 rad, out of limits
+  [6] q = [ -38.7031 -150.      165.      -47.0282  -27.1859   21.8434]  pos_err = 3.9e-17 m, rot_err = 3.6e-16 rad, out of limits
+  [7] q = [ -38.7031 -150.      165.      132.9718 -152.8141 -158.1566]  pos_err = 5.6e-17 m, rot_err = 3.0e-16 rad, out of limits
+
+target unreachable (p = [2, 0, 0]): 0 branches, 0 feasible
+
+target degenerate (q5 = 90): 8 branches, 2 feasible
+  [0] q = [-38.7031  30.      15.      37.835   55.7929 -17.835 ]  pos_err = 6.2e-17 m, rot_err = 5.7e-16 rad, feasible
+  [1] q = [ -38.7031   30.       15.     -142.165   124.2071  162.165 ]  pos_err = 5.0e-17 m, rot_err = 8.6e-16 rad, out of limits
+  [2] q = [ 20. -30.  15. -20.  90.   0.]  pos_err = 1.0e-16 m, rot_err = 4.9e-16 rad, feasible
+  [3] q = [  20.  -30.   15.  160.   90. -180.]  pos_err = 8.3e-17 m, rot_err = 4.3e-16 rad, out of limits
+  [4] q = [ 20. 150. 165. 160.  90.   0.]  pos_err = 1.2e-16 m, rot_err = 5.8e-16 rad, out of limits
+  [5] q = [  20.  150.  165.  -20.   90. -180.]  pos_err = 8.3e-17 m, rot_err = 6.4e-16 rad, out of limits
+  [6] q = [ -38.7031 -150.      165.     -142.165    55.7929  -17.835 ]  pos_err = 5.6e-17 m, rot_err = 7.1e-16 rad, out of limits
+  [7] q = [ -38.7031 -150.      165.       37.835   124.2071  162.165 ]  pos_err = 5.0e-17 m, rot_err = 8.3e-16 rad, out of limits
+
+# Task 4. Numerical IK (Levenberg-Marquardt, lambda = 0.01, tol = 1e-9, max_iter = 200)
+
+## right (b = +1)
+
+target zero
+  q0 = [0. 0. 0. 0. 0. 0.] -> converged, 1 it, q = [0. 0. 0. 0. 0. 0.], pos_err = 0.0e+00 m, rot_err = 0.0e+00 rad, nearest branch = 0 (dist 0.0e+00 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> max_iterations, 200 it, q = [ 0.6308  0.3785  0.0021 -0.6308 -0.3784  0.0021], pos_err = 6.5e-06 m, rot_err = 7.7e-07 rad, nearest branch = 0 (dist 1.8e-02 rad)
+
+target limit (q1 = -90)
+  q0 = [0. 0. 0. 0. 0. 0.] -> max_iterations, 200 it, q = [-89.3626   0.3824   0.0021  -0.6374  -0.3824   0.0021], pos_err = 6.6e-06 m, rot_err = 7.9e-07 rad, nearest branch = 0 (dist 1.8e-02 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> max_iterations, 200 it, q = [-89.3681   0.3791   0.0021  -0.6319  -0.3791   0.0021], pos_err = 6.5e-06 m, rot_err = 7.8e-07 rad, nearest branch = 0 (dist 1.8e-02 rad)
+
+target generic
+  q0 = [0. 0. 0. 0. 0. 0.] -> converged, 13 it, q = [ 129.5227   30.       15.     -123.2513  -75.3458  121.0953], pos_err = 7.1e-10 m, rot_err = 6.3e-11 rad, nearest branch = 0 (dist 2.8e-08 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> converged, 15 it, q = [  20.  -30.   15. -140. -155. -120.], pos_err = 9.3e-10 m, rot_err = 1.1e-10 rad, nearest branch = 3 (dist 1.5e-08 rad)
+
+target unreachable (p = [2, 0, 0])
+  q0 = [0. 0. 0. 0. 0. 0.] -> max_iterations, 200 it, q = [  47.5599  -62.5762   35.6313 -147.9681  128.7126  127.2561], pos_err = 2.0e+00 m, rot_err = 2.0e+00 rad, nearest branch = None (dist inf rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> max_iterations, 200 it, q = [147.7425 -82.8977 -45.532  -86.8003  13.5797  30.9845], pos_err = 2.1e+00 m, rot_err = 2.1e+00 rad, nearest branch = None (dist inf rad)
+
+target degenerate (q5 = 90)
+  q0 = [0. 0. 0. 0. 0. 0.] -> converged, 8 it, q = [ 20.     -30.      15.     -10.4505  90.       9.5495], pos_err = 3.0e-10 m, rot_err = 1.8e-11 rad, nearest branch = 2 (dist 2.4e-01 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> converged, 16 it, q = [ 20.     -30.      15.     115.9182  90.     135.9182], pos_err = 7.6e-10 m, rot_err = 2.5e-10 rad, nearest branch = 3 (dist 1.1e+00 rad)
+
+## left (b = -1)
+
+target zero
+  q0 = [0. 0. 0. 0. 0. 0.] -> converged, 1 it, q = [0. 0. 0. 0. 0. 0.], pos_err = 0.0e+00 m, rot_err = 0.0e+00 rad, nearest branch = 0 (dist 0.0e+00 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> max_iterations, 200 it, q = [ 0.6334 -0.3801 -0.0021 -0.6334  0.3801 -0.0021], pos_err = 6.5e-06 m, rot_err = 7.8e-07 rad, nearest branch = 0 (dist 1.8e-02 rad)
+
+target limit (q1 = -90)
+  q0 = [0. 0. 0. 0. 0. 0.] -> max_iterations, 200 it, q = [-89.368   -0.3792  -0.0021  -0.632    0.3793  -0.0021], pos_err = 6.5e-06 m, rot_err = 7.8e-07 rad, nearest branch = 0 (dist 1.8e-02 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> max_iterations, 200 it, q = [-89.3678  -0.3793  -0.0021  -0.6322   0.3794  -0.0021], pos_err = 6.5e-06 m, rot_err = 7.8e-07 rad, nearest branch = 0 (dist 1.8e-02 rad)
+
+target generic
+  q0 = [0. 0. 0. 0. 0. 0.] -> converged, 10 it, q = [ 20. -30.  15.  40. -25.  60.], pos_err = 1.5e-10 m, rot_err = 1.7e-11 rad, nearest branch = 2 (dist 3.5e-09 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> converged, 71 it, q = [ -38.7031   30.       15.      -47.0282 -152.8141 -158.1566], pos_err = 2.1e-10 m, rot_err = 2.4e-11 rad, nearest branch = 1 (dist 5.0e-09 rad)
+
+target unreachable (p = [2, 0, 0])
+  q0 = [0. 0. 0. 0. 0. 0.] -> max_iterations, 200 it, q = [ 77.0364 113.3303 -23.425  127.3387 -77.2008  -4.6779], pos_err = 2.2e+00 m, rot_err = 2.5e+00 rad, nearest branch = None (dist inf rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> max_iterations, 200 it, q = [  67.9851  161.5992   88.012  -150.6306 -100.8384  105.7576], pos_err = 2.4e+00 m, rot_err = 2.1e+00 rad, nearest branch = None (dist inf rad)
+
+target degenerate (q5 = 90)
+  q0 = [0. 0. 0. 0. 0. 0.] -> converged, 10 it, q = [-38.7031  30.      15.      37.835   55.7929 -17.835 ], pos_err = 2.1e-10 m, rot_err = 8.5e-12 rad, nearest branch = 0 (dist 4.0e-09 rad)
+  q0 = [  0.   0.   0. -90.   0.   0.] -> converged, 9 it, q = [ 20.     -30.      15.     -54.0309  90.     -34.0309], pos_err = 4.8e-10 m, rot_err = 1.5e-10 rad, nearest branch = 2 (dist 8.4e-01 rad)
+
+# Task 5. Jacobian (base frame, v at tool tip), FD: central, h = 1e-6 rad
+
+## right (b = +1)
+generic: ||Jgeo-Jder|| = 1.0e-15, ||Jgeo-Jfd|| = 1.2e-10, ||Jder-Jfd|| = 1.2e-10, sigma_min = 6.20e-02
+near singular (q5 = 89.9): ||Jgeo-Jder|| = 9.2e-16, ||Jgeo-Jfd|| = 1.3e-10, ||Jder-Jfd|| = 1.3e-10, sigma_min = 2.13e-04
+
+## left (b = -1)
+generic: ||Jgeo-Jder|| = 7.6e-16, ||Jgeo-Jfd|| = 1.4e-10, ||Jder-Jfd|| = 1.4e-10, sigma_min = 4.40e-02
+near singular (q5 = 89.9): ||Jgeo-Jder|| = 9.7e-16, ||Jgeo-Jfd|| = 1.4e-10, ||Jder-Jfd|| = 1.4e-10, sigma_min = 2.13e-04

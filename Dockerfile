@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Тесты + все численные результаты отчета (печатаются и сохраняются в results/)
-CMD ["sh", "-c", "pytest -q tests && python run_all.py"]
+CMD ["sh", "-c", "python -m pytest -q tests && python run_all.py"]
