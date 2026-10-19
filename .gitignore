@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Drafts and assignment text (not part of submission)
+notebooks/
+docs/
+check.ipynb
+robotics_homework_1_3.md
